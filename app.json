@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "86956a3f-846b-4767-8fb9-c516b7e1da91"
+      }
+    },
+    "owner": "primary-kallol"
   }
 }
