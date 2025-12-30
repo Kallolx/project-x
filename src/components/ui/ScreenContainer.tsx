@@ -14,7 +14,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   children,
   style,
   safeArea = true,
-  edges = ['top', 'bottom'],
+  edges = ['top'],
 }) => {
   const { colors } = useTheme();
 

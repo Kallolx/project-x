@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenContainer, Card } from '@/components/ui';
+import { Header, BodyContainer } from '@/components/layout';
 import { useUserStore } from '@/store';
 import { useTheme } from '@/hooks';
 import { SPACING, FONT_SIZE, COLORS, BORDER_RADIUS } from '@/constants';
@@ -50,102 +51,105 @@ export const SettingsScreen: React.FC = () => {
   );
 
   return (
-    <ScreenContainer>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>Settings</Text>
-        </View>
+    <ScreenContainer style={{ backgroundColor: colors.background }}>
+      <Header username="John Doe" />
+      
+      <BodyContainer style={styles.body}>
+        <ScrollView 
+          style={styles.scrollView} 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {/* Appearance */}
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>APPEARANCE</Text>
+          <Card style={styles.settingsCard} variant="filled">
+            {renderSettingItem(
+              'moon',
+              'Dark Mode',
+              theme === 'system' ? 'Following system' : isDark ? 'On' : 'Off',
+              <Switch
+                value={isDark}
+                onValueChange={(value) => setTheme(value ? 'dark' : 'light')}
+                trackColor={{ false: colors.border, true: COLORS.primary }}
+                thumbColor={COLORS.white}
+              />
+            )}
+            {renderSettingItem(
+              'phone-portrait',
+              'Follow System Theme',
+              'Use device appearance settings',
+              <Switch
+                value={theme === 'system'}
+                onValueChange={(value) => setTheme(value ? 'system' : isDark ? 'dark' : 'light')}
+                trackColor={{ false: colors.border, true: COLORS.primary }}
+                thumbColor={COLORS.white}
+              />
+            )}
+          </Card>
 
-        {/* Appearance */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>APPEARANCE</Text>
-        <Card style={styles.settingsCard}>
-          {renderSettingItem(
-            'moon',
-            'Dark Mode',
-            theme === 'system' ? 'Following system' : isDark ? 'On' : 'Off',
-            <Switch
-              value={isDark}
-              onValueChange={(value) => setTheme(value ? 'dark' : 'light')}
-              trackColor={{ false: colors.border, true: COLORS.primary }}
-              thumbColor={COLORS.white}
-            />
-          )}
-          {renderSettingItem(
-            'phone-portrait',
-            'Follow System Theme',
-            'Use device appearance settings',
-            <Switch
-              value={theme === 'system'}
-              onValueChange={(value) => setTheme(value ? 'system' : isDark ? 'dark' : 'light')}
-              trackColor={{ false: colors.border, true: COLORS.primary }}
-              thumbColor={COLORS.white}
-            />
-          )}
-        </Card>
+          {/* Data */}
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>DATA</Text>
+          <Card style={styles.settingsCard} variant="filled">
+            {renderSettingItem(
+              'time',
+              'Clear Recent Tools',
+              'Remove your recent tools history',
+              undefined,
+              handleClearRecent
+            )}
+          </Card>
 
-        {/* Data */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>DATA</Text>
-        <Card style={styles.settingsCard}>
-          {renderSettingItem(
-            'time',
-            'Clear Recent Tools',
-            'Remove your recent tools history',
-            undefined,
-            handleClearRecent
-          )}
-        </Card>
+          {/* About */}
+          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>ABOUT</Text>
+          <Card style={styles.settingsCard} variant="filled">
+            {renderSettingItem(
+              'information-circle',
+              'App Version',
+              APP_VERSION
+            )}
+            {renderSettingItem(
+              'logo-github',
+              'Source Code',
+              'View on GitHub',
+              undefined,
+              () => {}
+            )}
+            {renderSettingItem(
+              'star',
+              'Rate App',
+              'Leave a review',
+              undefined,
+              () => {}
+            )}
+          </Card>
 
-        {/* About */}
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>ABOUT</Text>
-        <Card style={styles.settingsCard}>
-          {renderSettingItem(
-            'information-circle',
-            'App Version',
-            APP_VERSION
-          )}
-          {renderSettingItem(
-            'logo-github',
-            'Source Code',
-            'View on GitHub',
-            undefined,
-            () => {}
-          )}
-          {renderSettingItem(
-            'star',
-            'Rate App',
-            'Leave a review',
-            undefined,
-            () => {}
-          )}
-        </Card>
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+              {APP_NAME} v{APP_VERSION}
+            </Text>
+            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+              Made with ❤️
+            </Text>
+          </View>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            {APP_NAME} v{APP_VERSION}
-          </Text>
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
-            Made with ❤️
-          </Text>
-        </View>
-      </ScrollView>
+          <View style={styles.bottomPadding} />
+        </ScrollView>
+      </BodyContainer>
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
-    paddingHorizontal: SPACING.md,
   },
-  header: {
-    marginTop: SPACING.md,
-    marginBottom: SPACING.lg,
+  scrollView: {
+    flex: 1,
   },
-  title: {
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: 'bold',
+  scrollContent: {
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
   },
   sectionTitle: {
     fontSize: FONT_SIZE.xs,
@@ -191,5 +195,8 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: FONT_SIZE.sm,
+  },
+  bottomPadding: {
+    height: SPACING.xl,
   },
 });

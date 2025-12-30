@@ -6,8 +6,10 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Home: undefined;
-  Tools: undefined;
-  Settings: undefined;
+  Jobs: undefined;
+  Docs: undefined;
+  Files: undefined;
+  More: undefined;
 };
 
 // Tool Types

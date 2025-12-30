@@ -32,8 +32,8 @@ export const COLORS = {
   info: '#3B82F6',
 
   // Background
-  background: '#F9FAFB',
-  backgroundDark: '#111827',
+  background: '#d1e2ec',
+  backgroundDark: '#011238',
   surface: '#FFFFFF',
   surfaceDark: '#1F2937',
 };

@@ -1,10 +1,11 @@
 import React from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { HomeScreen, ToolsScreen, SettingsScreen } from '@/screens';
+import { HomeScreen, ToolsScreen, SettingsScreen, JobsScreen, DocsScreen, FilesScreen, MoreScreen } from '@/screens';
 import { MainTabParamList } from '@/types';
 import { useTheme } from '@/hooks';
-import { COLORS } from '@/constants';
+import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZE } from '@/constants';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -21,46 +22,85 @@ export const TabNavigator: React.FC = () => {
             case 'Home':
               iconName = focused ? 'home' : 'home-outline';
               break;
-            case 'Tools':
-              iconName = focused ? 'apps' : 'apps-outline';
+            case 'Jobs':
+              iconName = focused ? 'briefcase' : 'briefcase-outline';
               break;
-            case 'Settings':
-              iconName = focused ? 'settings' : 'settings-outline';
+            case 'Docs':
+              iconName = focused ? 'document-text' : 'document-text-outline';
+              break;
+            case 'Files':
+              iconName = focused ? 'folder' : 'folder-outline';
+              break;
+            case 'More':
+              iconName = focused ? 'grid' : 'grid-outline';
               break;
             default:
               iconName = 'ellipse';
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={22} color={color} />;
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: colors.textSecondary,
+        tabBarShowLabel: true,
+        tabBarLabelStyle: {
+          fontSize: FONT_SIZE.xs,
+          fontWeight: '500',
+          marginTop: -2,
+        },
         tabBarStyle: {
           backgroundColor: colors.surface,
+          borderTopWidth: 1,
           borderTopColor: colors.border,
+          height: Platform.OS === 'ios' ? 95 : 75,
+          paddingTop: SPACING.sm,
+          paddingBottom: Platform.OS === 'ios' ? SPACING.xl : SPACING.lg,
         },
+        tabBarItemStyle: {
+          paddingVertical: SPACING.xs,
+        },
+        headerShown: true,
         headerStyle: {
-          backgroundColor: colors.surface,
+          backgroundColor: colors.background,
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+        headerTitleStyle: {
+          color: colors.text,
+          fontWeight: '600',
+          fontSize: FONT_SIZE.lg,
         },
         headerTintColor: colors.text,
-        headerShadowVisible: false,
       })}
     >
-      <Tab.Screen
-        name="Home"
+      <Tab.Screen 
+        name="Home" 
         component={HomeScreen}
         options={{ headerShown: false }}
       />
-      <Tab.Screen
-        name="Tools"
-        component={ToolsScreen}
+      <Tab.Screen 
+        name="Jobs" 
+        component={JobsScreen}
         options={{ headerShown: false }}
       />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
+      <Tab.Screen 
+        name="Docs" 
+        component={DocsScreen}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen 
+        name="Files" 
+        component={FilesScreen}
+        options={{ headerShown: false }}
+      />
+      <Tab.Screen 
+        name="More" 
+        component={MoreScreen}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
   );
 };
+
+const styles = StyleSheet.create({});

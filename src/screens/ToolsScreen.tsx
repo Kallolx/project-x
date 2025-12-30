@@ -1,13 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ScreenContainer, Input, Badge } from '@/components/ui';
-import { ToolCard } from '@/components/tools';
+import { ScreenContainer, Input } from '@/components/ui';
+import { ToolGridCard } from '@/components/tools';
+import { Header, BodyContainer } from '@/components/layout';
 import { useToolsStore, useUserStore } from '@/store';
 import { useTheme, useDebounce } from '@/hooks';
 import { SPACING, FONT_SIZE, COLORS, BORDER_RADIUS } from '@/constants';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList, ToolCategory } from '@/types';
+import { RootStackParamList, ToolCategory, Tool } from '@/types';
 import { capitalize } from '@/utils';
 
 const categories: (ToolCategory | 'all')[] = ['all', 'productivity', 'utilities', 'conversion', 'generator', 'other'];
@@ -16,7 +17,7 @@ export const ToolsScreen: React.FC = () => {
   const { colors } = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { tools, searchQuery, setSearchQuery, selectedCategory, setSelectedCategory } = useToolsStore();
-  const { addFavoriteTool, removeFavoriteTool, addRecentTool, isFavorite } = useUserStore();
+  const { addRecentTool } = useUserStore();
 
   const debouncedSetSearch = useDebounce(setSearchQuery, 300);
 
@@ -34,118 +35,103 @@ export const ToolsScreen: React.FC = () => {
     navigation.navigate('ToolDetail', { toolId });
   };
 
-  const handleToggleFavorite = (toolId: string) => {
-    if (isFavorite(toolId)) {
-      removeFavoriteTool(toolId);
-    } else {
-      addFavoriteTool(toolId);
-    }
-  };
+  const renderToolItem = ({ item, index }: { item: Tool; index: number }) => (
+    <View style={[styles.gridItem, index % 2 === 1 && styles.gridItemRight]}>
+      <ToolGridCard
+        tool={item}
+        onPress={() => handleToolPress(item.id)}
+      />
+    </View>
+  );
 
   return (
-    <ScreenContainer>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>Tools</Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {filteredTools.length} tools available
-          </Text>
-        </View>
-
-        {/* Search */}
-        <Input
-          placeholder="Search tools..."
-          defaultValue={searchQuery}
-          onChangeText={debouncedSetSearch}
-          leftIcon={<Ionicons name="search" size={20} color={colors.textSecondary} />}
-          containerStyle={styles.searchInput}
-        />
-
-        {/* Categories */}
-        <FlatList
-          horizontal
-          data={categories}
-          keyExtractor={(item) => item}
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesList}
-          contentContainerStyle={styles.categoriesContent}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[
-                styles.categoryChip,
-                {
-                  backgroundColor: selectedCategory === item ? COLORS.primary : colors.surface,
-                  borderColor: selectedCategory === item ? COLORS.primary : colors.border,
-                },
-              ]}
-              onPress={() => setSelectedCategory(item)}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  { color: selectedCategory === item ? COLORS.white : colors.text },
-                ]}
-              >
-                {capitalize(item)}
-              </Text>
-            </TouchableOpacity>
-          )}
-        />
-
-        {/* Tools List */}
-        <FlatList
-          data={filteredTools}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.toolsList}
-          renderItem={({ item }) => (
-            <ToolCard
-              tool={item}
-              onPress={() => handleToolPress(item.id)}
-              isFavorite={isFavorite(item.id)}
-              onToggleFavorite={() => handleToggleFavorite(item.id)}
+    <ScreenContainer style={{ backgroundColor: colors.background }}>
+      <Header username="John Doe" />
+      
+      <BodyContainer style={styles.body}>
+        <View style={styles.content}>
+          {/* Search */}
+          <View style={styles.searchContainer}>
+            <Input
+              placeholder="Search tools..."
+              defaultValue={searchQuery}
+              onChangeText={debouncedSetSearch}
+              leftIcon={<Ionicons name="search" size={20} color={colors.textSecondary} />}
             />
-          )}
-          ListEmptyComponent={
-            <View style={styles.emptyState}>
-              <Ionicons name="search" size={48} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-                No tools found
-              </Text>
-            </View>
-          }
-        />
-      </View>
+          </View>
+
+          {/* Categories */}
+          <FlatList
+            horizontal
+            data={categories}
+            keyExtractor={(item) => item}
+            showsHorizontalScrollIndicator={false}
+            style={styles.categoriesList}
+            contentContainerStyle={styles.categoriesContent}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.categoryChip,
+                  {
+                    backgroundColor: selectedCategory === item ? COLORS.primary : 'transparent',
+                    borderColor: selectedCategory === item ? COLORS.primary : colors.border,
+                  },
+                ]}
+                onPress={() => setSelectedCategory(item)}
+              >
+                <Text
+                  style={[
+                    styles.categoryText,
+                    { color: selectedCategory === item ? COLORS.white : colors.textSecondary },
+                  ]}
+                >
+                  {capitalize(item)}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+
+          {/* Tools Grid */}
+          <FlatList
+            data={filteredTools}
+            keyExtractor={(item) => item.id}
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.toolsList}
+            renderItem={renderToolItem}
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <Ionicons name="search" size={48} color={colors.textSecondary} />
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  No tools found
+                </Text>
+              </View>
+            }
+          />
+        </View>
+      </BodyContainer>
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  body: {
     flex: 1,
-    paddingHorizontal: SPACING.md,
   },
-  header: {
-    marginTop: SPACING.md,
-    marginBottom: SPACING.md,
+  content: {
+    flex: 1,
+    paddingTop: SPACING.lg,
   },
-  title: {
-    fontSize: FONT_SIZE.xxxl,
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontSize: FONT_SIZE.md,
-    marginTop: SPACING.xs,
-  },
-  searchInput: {
+  searchContainer: {
+    paddingHorizontal: SPACING.lg,
     marginBottom: SPACING.md,
   },
   categoriesList: {
     maxHeight: 44,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   categoriesContent: {
+    paddingHorizontal: SPACING.lg,
     gap: SPACING.sm,
   },
   categoryChip: {
@@ -159,7 +145,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   toolsList: {
-    paddingBottom: SPACING.xxl,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xl,
+  },
+  gridItem: {
+    flex: 1,
+    paddingRight: SPACING.sm,
+    marginBottom: SPACING.lg,
+  },
+  gridItemRight: {
+    paddingRight: 0,
+    paddingLeft: SPACING.sm,
   },
   emptyState: {
     alignItems: 'center',

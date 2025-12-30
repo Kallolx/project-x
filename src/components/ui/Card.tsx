@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View,
   StyleSheet,
+  StyleProp,
   ViewStyle,
   TouchableOpacity,
   TouchableOpacityProps,
@@ -11,7 +12,7 @@ import { useTheme } from '@/hooks';
 
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   variant?: 'elevated' | 'outlined' | 'filled';
   onPress?: TouchableOpacityProps['onPress'];
 }
@@ -24,7 +25,7 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const { colors } = useTheme();
 
-  const cardStyle = [
+  const cardStyle: StyleProp<ViewStyle> = [
     styles.base,
     variant === 'elevated' && [styles.elevated, SHADOWS.md],
     variant === 'outlined' && [styles.outlined, { borderColor: colors.border }],
